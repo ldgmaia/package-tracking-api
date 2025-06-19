@@ -2,7 +2,7 @@
 // import { trackUPS } from './ups'
 // import { trackDHL } from './dhl'
 
-import { trackPurolator } from './purolator.js'
+import { trackPurolator } from './purolator'
 
 export async function trackPackage(carrier: string, trackingCode: string) {
   switch (carrier.toLowerCase()) {

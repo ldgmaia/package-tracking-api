@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "moduleResolution": "node16",
     "lib": ["ES2023"],
     "module": "node16",
     "target": "ES2023",

@@ -1,8 +1,8 @@
-import { prisma } from '@/lib/prisma'
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify'
 import { ZodTypeProvider } from 'fastify-type-provider-zod'
 import { z } from 'zod'
 import { scryptSync } from 'crypto'
+import { prisma } from '@/lib/prisma'
 import { trackPackage } from '@/services/carriers/track'
 
 // Extend FastifyRequest to include user

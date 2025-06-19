@@ -1,16 +1,12 @@
 import { createClientAsync, BasicAuthSecurity } from 'soap'
-import { resolve, dirname } from 'path'
-import { fileURLToPath } from 'url'
+import { resolve } from 'path'
 
 export async function trackPurolator(trackingCode: string) {
   const KEY = process.env.PUROLATOR_API_KEY
   const PASSWORD = process.env.PUROLATOR_API_SECRET
   const SERVICE_URL = process.env.PUROLATOR_BASE_URL
 
-  const __filename = fileURLToPath(import.meta.url)
-  const __dirname = dirname(__filename)
   const WSDL_URL = resolve(__dirname, 'TrackingService.wsdl')
-
   try {
     const client = await createClientAsync(WSDL_URL, {
       endpoint: `${SERVICE_URL}/PWS/V1/Tracking/TrackingService.asmx`,
@@ -47,17 +43,24 @@ export async function trackPurolator(trackingCode: string) {
     // 🚀 Make the request
     const [result] = await client.TrackPackagesByPinAsync(args)
 
-    return {
-      status:
-        result.TrackingInformationList.TrackingInformation.at(0).Scans.Scan.at(
+    const lastUpdate = result.TrackingInformationList.TrackingInformation.at(
+      0
+    ).Scans.Scan.find((scan) => scan.ScanType === 'Delivery')
+      ? result.TrackingInformationList.TrackingInformation.at(
           0
-        ).Description || 'unknown',
+        ).Scans.Scan.find((scan) => scan.ScanType === 'Delivery').Description
+      : result.TrackingInformationList.TrackingInformation.at(
+          0
+        ).Scans.Scan.find((scan) => scan.ScanType === 'Other').Description
+
+    return {
+      status: lastUpdate || 'unknown',
       details: result,
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     return {
       status: 'error',
-      details: error.message || error,
+      details: error instanceof Error ? error.message : String(error),
     }
   }
 }
