@@ -24,3 +24,13 @@ model FedExToken {
 
   @@map("fedex_tokens")
 }
+
+model UPSToken {
+  id          String   @id @default("ups") // Single record
+  accessToken String
+  expiresAt   DateTime
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("ups_tokens")
+}

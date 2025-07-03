@@ -1,6 +1,6 @@
 import { trackPurolator } from './purolator'
 import { trackFedex } from './fedex'
-// import { trackUPS } from './ups'
+import { trackUPS } from './ups'
 // import { trackDHL } from './dhl'
 
 export async function trackPackage(carrier: string, trackingCode: string) {
@@ -9,8 +9,8 @@ export async function trackPackage(carrier: string, trackingCode: string) {
       return trackPurolator(trackingCode)
     case 'fedex':
       return trackFedex(trackingCode)
-    // case 'ups':
-    //   return trackUPS(trackingCode)
+    case 'ups':
+      return trackUPS(trackingCode)
     // case 'dhl':
     //   return trackDHL(trackingCode)
     default:
