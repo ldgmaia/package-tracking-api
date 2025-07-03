@@ -9,6 +9,7 @@ const envSchema = z.object({
   UPS_API_SECRET: z.string(),
   UPS_BASE_URL: z.string(),
   DHL_API_KEY: z.string(),
+  DHL_API_SECRET: z.string(),
   DHL_BASE_URL: z.string(),
   PUROLATOR_API_KEY: z.string(),
   PUROLATOR_API_SECRET: z.string(),

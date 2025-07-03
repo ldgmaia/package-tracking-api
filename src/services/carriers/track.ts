@@ -1,7 +1,7 @@
 import { trackPurolator } from './purolator'
 import { trackFedex } from './fedex'
 import { trackUPS } from './ups'
-// import { trackDHL } from './dhl'
+import { trackDHL } from './dhl'
 
 export async function trackPackage(carrier: string, trackingCode: string) {
   switch (carrier.toLowerCase()) {
@@ -11,8 +11,8 @@ export async function trackPackage(carrier: string, trackingCode: string) {
       return trackFedex(trackingCode)
     case 'ups':
       return trackUPS(trackingCode)
-    // case 'dhl':
-    //   return trackDHL(trackingCode)
+    case 'dhl':
+      return trackDHL(trackingCode)
     default:
       throw new Error('Unsupported carrier')
   }
