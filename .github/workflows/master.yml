@@ -1,0 +1,27 @@
+name: CI-MASTER
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Git pull, run Migrations and restart services
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.BETA_SSH_HOST }}
+          username: ${{ secrets.BETA_SSH_USER }}
+          key: ${{ secrets.BETA_SSH_KEY }}
+          port: ${{ secrets.BETA_SSH_PORT }}
+          script: |
+            cd /home/deploy/documents/projects/package-tracking-api
+            eval "$(ssh-agent -s)"
+            ssh-add ~/.ssh/rbms_ed25519
+            git pull
+            export NVM_DIR=~/.nvm
+            source ~/.nvm/nvm.sh
+            npm i
+            npm run build            
+            pm2 restart all --update-env
