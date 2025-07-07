@@ -1,12 +1,28 @@
 import { createClientAsync, BasicAuthSecurity } from 'soap'
 import { resolve } from 'path'
+import { existsSync } from 'fs'
 
 export async function trackPurolator(trackingCode: string) {
   const KEY = process.env.PUROLATOR_API_KEY
   const PASSWORD = process.env.PUROLATOR_API_SECRET
   const SERVICE_URL = process.env.PUROLATOR_BASE_URL
 
-  const WSDL_URL = resolve(__dirname, 'TrackingService.wsdl')
+  let WSDL_URL: string
+
+  const prodPath = resolve(
+    __dirname,
+    'services',
+    'carriers',
+    'TrackingService.wsdl'
+  )
+  const devPath = resolve(__dirname, 'TrackingService.wsdl')
+
+  if (existsSync(prodPath)) {
+    WSDL_URL = prodPath
+  } else {
+    WSDL_URL = devPath
+  }
+  console.log(WSDL_URL)
   try {
     const client = await createClientAsync(WSDL_URL, {
       endpoint: `${SERVICE_URL}/PWS/V1/Tracking/TrackingService.asmx`,
@@ -58,6 +74,7 @@ export async function trackPurolator(trackingCode: string) {
       details: result,
     }
   } catch (error: unknown) {
+    console.error(error)
     return {
       status: 'error',
       details: error instanceof Error ? error.message : String(error),
