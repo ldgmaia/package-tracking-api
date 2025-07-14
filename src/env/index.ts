@@ -14,6 +14,9 @@ const envSchema = z.object({
   PUROLATOR_API_KEY: z.string(),
   PUROLATOR_API_SECRET: z.string(),
   PUROLATOR_BASE_URL: z.string(),
+  CANADAPOST_API_KEY: z.string(),
+  CANADAPOST_API_SECRET: z.string(),
+  CANADAPOST_BASE_URL: z.string(),
   DATABASE_URL: z.string(),
   NODE_ENV: z.enum(['dev', 'test', 'production']).default('dev'),
 })
