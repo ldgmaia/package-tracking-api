@@ -1,6 +1,6 @@
 import fs from 'fs'
 
-module.exports = {
+export default {
   apps: [
     {
       name: 'package-tracking',
