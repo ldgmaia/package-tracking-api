@@ -22,7 +22,6 @@ export async function trackPurolator(trackingCode: string) {
   } else {
     WSDL_URL = devPath
   }
-  console.log(WSDL_URL)
   try {
     const client = await createClientAsync(WSDL_URL, {
       endpoint: `${SERVICE_URL}/PWS/V1/Tracking/TrackingService.asmx`,

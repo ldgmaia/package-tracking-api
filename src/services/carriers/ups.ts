@@ -226,7 +226,7 @@ export async function trackUPS(trackingCode: string) {
     }
     const response = (await res.json()) as UPSTrackingResponse
     const lastUpdate =
-      response?.trackResponse?.shipment?.[0]?.package?.[0]?.activity[0]?.status
+      response?.trackResponse?.shipment?.[0]?.package?.[0]?.currentStatus
         ?.description
     return {
       status: lastUpdate || 'unknown',
