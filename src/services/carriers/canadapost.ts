@@ -3,11 +3,12 @@ import { parseStringPromise } from 'xml2js'
 
 interface CanadaPostTrackingResult {
   status: string
+  destinationCountry: string | null
   details: unknown
 }
 
 export async function trackCanadaPost(
-  trackingCode: string
+  trackingCode: string,
 ): Promise<CanadaPostTrackingResult> {
   const key = env.CANADAPOST_API_KEY
   const password = env.CANADAPOST_API_SECRET
@@ -57,6 +58,7 @@ export async function trackCanadaPost(
   }
   return {
     status,
+    destinationCountry: 'Unknown',
     details,
   }
 }

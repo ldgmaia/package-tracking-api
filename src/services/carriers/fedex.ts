@@ -85,7 +85,7 @@ async function getFedExToken(): Promise<string> {
     })
     if (!res.ok) {
       throw new Error(
-        `FedEx token request failed: ${res.status} ${res.statusText}`
+        `FedEx token request failed: ${res.status} ${res.statusText}`,
       )
     }
     const response = (await res.json()) as FedExTokenResponse
@@ -118,6 +118,7 @@ async function getFedExToken(): Promise<string> {
 
 interface TrackingResult {
   status: string
+  destinationCountry?: string | null
   details: {
     latestStatusDetail: {
       code: string
@@ -146,7 +147,7 @@ interface TrackingResult {
 }
 
 export async function trackFedex(
-  trackingCode: string
+  trackingCode: string,
 ): Promise<TrackingResult> {
   try {
     const baseUrl = env.FEDEX_BASE_URL
@@ -175,7 +176,7 @@ export async function trackFedex(
     })
     if (!res.ok) {
       throw new Error(
-        `FedEx tracking request failed: ${res.status} ${res.statusText}`
+        `FedEx tracking request failed: ${res.status} ${res.statusText}`,
       )
     }
     const response = (await res.json()) as FedExTrackingResponse
@@ -187,8 +188,14 @@ export async function trackFedex(
       throw new Error('No tracking information found')
     }
 
+    // Try to get destination country from the latest scan event
+    let destinationCountry = undefined
+    if (trackInfo.scanEvents && trackInfo.scanEvents.length > 0) {
+      destinationCountry = trackInfo.scanEvents[0]?.scanLocation?.countryCode
+    }
     return {
       status: trackInfo.latestStatusDetail?.statusByLocale || 'unknown',
+      destinationCountry: destinationCountry || null,
       details: {
         latestStatusDetail: trackInfo.latestStatusDetail,
         dateAndTimes: trackInfo.dateAndTimes,

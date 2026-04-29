@@ -67,6 +67,7 @@ export async function trackByCode(app: FastifyInstance) {
           response: {
             201: z.object({
               latestStatus: z.string(),
+              destinationCountry: z.string().nullable(),
             }),
           },
         },
@@ -77,12 +78,13 @@ export async function trackByCode(app: FastifyInstance) {
           const trackingResult = await trackPackage(carrier, trackingCode)
           return reply.status(201).send({
             latestStatus: trackingResult.status,
+            destinationCountry: trackingResult.destinationCountry,
           })
         } catch (error) {
           const message =
             error instanceof Error ? error.message : 'Tracking failed'
           return reply.status(400).send({ error: message })
         }
-      }
+      },
     )
 }

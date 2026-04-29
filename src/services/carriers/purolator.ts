@@ -7,13 +7,17 @@ export async function trackPurolator(trackingCode: string) {
   const PASSWORD = process.env.PUROLATOR_API_SECRET
   const SERVICE_URL = process.env.PUROLATOR_BASE_URL
 
+  if (!KEY || !PASSWORD || !SERVICE_URL) {
+    throw new Error('Missing Purolator configuration')
+  }
+
   let WSDL_URL: string
 
   const prodPath = resolve(
     __dirname,
     'services',
     'carriers',
-    'TrackingService.wsdl'
+    'TrackingService.wsdl',
   )
   const devPath = resolve(__dirname, 'TrackingService.wsdl')
 
@@ -43,7 +47,7 @@ export async function trackPurolator(trackingCode: string) {
       soapHeader,
       '',
       'ns1',
-      'http://purolator.com/pws/datatypes/v1'
+      'http://purolator.com/pws/datatypes/v1',
     )
 
     // 📦 Define the PIN(s) you want to track
@@ -58,24 +62,21 @@ export async function trackPurolator(trackingCode: string) {
     // 🚀 Make the request
     const [result] = await client.TrackPackagesByPinAsync(args)
 
-    const lastUpdate = result.TrackingInformationList.TrackingInformation.at(
-      0
-    ).Scans.Scan.find((scan) => scan.ScanType === 'Delivery')
-      ? result.TrackingInformationList.TrackingInformation.at(
-          0
-        ).Scans.Scan.find((scan) => scan.ScanType === 'Delivery').Description
-      : result.TrackingInformationList.TrackingInformation.at(
-          0
-        ).Scans.Scan.find((scan) => scan.ScanType === 'Other').Description
+    const trackingInfo =
+      result.TrackingInformationList.TrackingInformation.at(0)
+
+    const lastUpdate = trackingInfo.Scans.Scan.at(0).Description || 'unknown'
 
     return {
       status: lastUpdate || 'unknown',
+      destinationCountry: 'unknown',
       details: result,
     }
   } catch (error: unknown) {
     console.error(error)
     return {
       status: 'error',
+      destinationCountry: null,
       details: error instanceof Error ? error.message : String(error),
     }
   }

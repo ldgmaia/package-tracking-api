@@ -159,7 +159,7 @@ async function getUPSToken(): Promise<string> {
 
   try {
     const credentials = Buffer.from(`${clientId}:${clientSecret}`).toString(
-      'base64'
+      'base64',
     )
     const params = new URLSearchParams({
       grant_type: 'client_credentials',
@@ -174,7 +174,7 @@ async function getUPSToken(): Promise<string> {
     })
     if (!res.ok) {
       throw new Error(
-        `UPS token request failed: ${res.status} ${res.statusText}`
+        `UPS token request failed: ${res.status} ${res.statusText}`,
       )
     }
     const response = (await res.json()) as UPSTokenResponse
@@ -221,15 +221,22 @@ export async function trackUPS(trackingCode: string) {
     // console.log('resText ', resText)
     if (!res.ok) {
       throw new Error(
-        `UPS tracking request failed: ${res.status} ${res.statusText}`
+        `UPS tracking request failed: ${res.status} ${res.statusText}`,
       )
     }
     const response = (await res.json()) as UPSTrackingResponse
-    const lastUpdate =
-      response?.trackResponse?.shipment?.[0]?.package?.[0]?.currentStatus
-        ?.description
+    const pkg = response?.trackResponse?.shipment?.[0]?.package?.[0]
+    const lastUpdate = pkg?.currentStatus?.description
+    // Try to get destination country from packageAddress or activity
+    let destinationCountry = null
+    if (pkg?.packageAddress && pkg.packageAddress.length > 0) {
+      destinationCountry = pkg.packageAddress[0]?.address?.countryCode
+    } else if (pkg?.activity && pkg.activity.length > 0) {
+      destinationCountry = pkg.activity[0]?.location?.address?.countryCode
+    }
     return {
       status: lastUpdate || 'unknown',
+      destinationCountry: destinationCountry || null,
     }
   } catch (error) {
     if (error instanceof Error) {

@@ -96,13 +96,17 @@ export async function trackDHL(trackingCode: string) {
   })
   if (!res.ok) {
     throw new Error(
-      `DHL tracking request failed: ${res.status} ${res.statusText}`
+      `DHL tracking request failed: ${res.status} ${res.statusText}`,
     )
   }
   const response = (await res.json()) as DHLTrackingResponse
-  const lastUpdate =
-    response?.shipments?.[0].events?.[0]?.description || 'unknown'
+  const shipment = response?.shipments?.[0]
+  const lastUpdate = shipment?.events?.[0]?.description || 'unknown'
+  // Destination country from receiverDetails
+  const destinationCountry =
+    shipment?.receiverDetails?.postalAddress?.countryCode || null
   return {
     status: lastUpdate || 'unknown',
+    destinationCountry,
   }
 }

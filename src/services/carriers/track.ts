@@ -5,18 +5,29 @@ import { trackDHL } from './dhl'
 import { trackCanadaPost } from './canadapost'
 
 export async function trackPackage(carrier: string, trackingCode: string) {
+  let result
   switch (carrier.toLowerCase()) {
     case 'purolator':
-      return trackPurolator(trackingCode)
+      result = await trackPurolator(trackingCode)
+      break
     case 'canadapost':
-      return trackCanadaPost(trackingCode)
+      result = await trackCanadaPost(trackingCode)
+      break
     case 'fedex':
-      return trackFedex(trackingCode)
+      result = await trackFedex(trackingCode)
+      break
     case 'ups':
-      return trackUPS(trackingCode)
+      result = await trackUPS(trackingCode)
+      break
     case 'dhl':
-      return trackDHL(trackingCode)
+      result = await trackDHL(trackingCode)
+      break
     default:
       throw new Error('Unsupported carrier')
+  }
+  // Always return status and destinationCountry if present
+  return {
+    status: result.status,
+    destinationCountry: result.destinationCountry || null,
   }
 }

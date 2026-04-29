@@ -4,6 +4,7 @@
     "lib": ["ES2023"],
     "module": "node16",
     "target": "ES2023",
+    "ignoreDeprecations": "6.0",
     "baseUrl": "./",
     "paths": {
       "@/*": ["src/*"]
